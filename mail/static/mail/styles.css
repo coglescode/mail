@@ -1,10 +1,22 @@
+
+
 textarea {
     min-height: 400px;
 }
-<<<<<<< HEAD
+
 
 .read {
-
+    border: 5px solid #B2B2B2;
+    background-color: #626262;
+    color: #FFFFFF;
+    padding: 1em;
+    margin: 0 0 1em 0;
 }
-=======
->>>>>>> 7d1b871c4d0ea8811b7301afba023f37582b585a
+
+.unread {
+    border: 5px solid #000000; 
+    background-color: #FFFFFF;
+    color: #02764C;
+    padding: 1em;
+    margin: 0 0 1em 0;
+}

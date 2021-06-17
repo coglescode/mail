@@ -141,15 +141,11 @@ function load_mailbox(mailbox) {
     function showEmails(emails) {
       //Create a div for every sinlge email.
       const email_div = document.createElement('div');
-      const sender_div = document.createElement('div');
-      const subject_div = document.createElement('div');
-      const time_div = document.createElement('div')
+      const sender_div = document.createElement('p');
+      const subject_div = document.createElement('p');
+      const time_div = document.createElement('p')
 
-      // Styles the div that contain all emails
-      email_div.className = 'email';
-      email_div.style.marginBottom = "2em"; 
-      email_div.style.padding = "1em";         
-
+      
       // Styles and display the required fields with its values.
       sender_div.className = 'sender';
       sender_div.innerHTML = `<h3> ${emails.sender}.</h3>`;
@@ -166,13 +162,9 @@ function load_mailbox(mailbox) {
 
       // Checks read or unread status for all emails and applies a corresponded style for each status. 
       if( emails.read ) {
-        email_div.style.backgroundColor = "#626262";
-        email_div.style.border = "5px solid #B2B2B2";
-        email_div.style.color = "#FFFFFF";
+        email_div.setAttribute('class', 'read');
       } else {
-        email_div.style.backgroundColor = "#FFFFFF";
-        email_div.style.color = "green"
-        email_div.style.border = "5px solid #000000";        
+        email_div.setAttribute('class', 'unread');  
       }     
       
 
@@ -221,17 +213,15 @@ function singleEmail(id) {
     // ... do something else with email ...
 
     // Function to read the mail 
-    sender.innerHTML = `<h2>From: ${email.sender + email.timestamp}</h2><hr>`;
+    sender.innerHTML = `<h2>From: ${email.sender}</h2><hr>`;
     recipients.innerHTML = `<h2>To: ${email.recipients}</h2><hr>`;
     subject.innerHTML = `<h2> ${email.subject}</h2><hr>`;
     body.innerHTML = `<h2>${email.body}</h2><hr>`;
-    //timestamp.innerHTML = `${email.timestamp}`;
+    timestamp.innerHTML = `${email.timestamp}`;
 
      
    
-    reply.addEventListener('click', () => 
-    
-     {
+    reply.addEventListener('click', () =>  {
 
       document.querySelector('#currentEmail').style.display = 'none'; 
     
@@ -244,9 +234,9 @@ function singleEmail(id) {
     });
        
     if (email.archived) {
-      archive.innerHTML = "Unarchive"
+      archive.innerHTML = "Unarchive";
     } else {
-      archive.innerHTML = "Archive"
+      archive.innerHTML = "Archive";
     }  
 
  
@@ -271,9 +261,7 @@ function singleEmail(id) {
         window.location.reload(true);
       }, 10); 
       
-      
-      //load_mailbox('inbox');
-     
+           
     })
  
   })
@@ -284,14 +272,6 @@ function singleEmail(id) {
  
   
 }
-
-
-
-  
-                   
-  
-  
-  
 
 
 
