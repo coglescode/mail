@@ -9,56 +9,68 @@ document.addEventListener('DOMContentLoaded', function() {
   // Creates the div to show the requested email field according its id
   const currentEmail = document.createElement('div');
         currentEmail.id = "currentEmail";
-        currentEmail.style.display = 'block';           
+        currentEmail.setAttribute("class", "grid");      
+               
         document.querySelector('.container').appendChild(currentEmail);
 
   const sender = document.createElement('div');
         sender.id = "sender";   
-        sender.style.display = 'block';    
-        sender.className = 'col-5 ';       
+        sender.setAttribute("class", "read_sender");  
         document.querySelector('#currentEmail').appendChild(sender);
-
-  const timestamp = document.createElement('div');
-        timestamp.id = "timestamp";
-        timestamp.style.display = 'block';     
-        document.querySelector('#currentEmail').appendChild(timestamp);
-
+ 
   
   const recipients = document.createElement('div');
         recipients.id = "recipients";
-        recipients.style.display = 'block';           
+        recipients.setAttribute("class", "read_recipients");
         document.querySelector('#currentEmail').appendChild(recipients);
+
+  const timestamp = document.createElement('div');
+        timestamp.id = "timestamp";
+        timestamp.setAttribute("class", "read_timestamp");
+        currentEmail.appendChild(timestamp);
+
   
   const subject = document.createElement('div');
-        subject.id = "subject";
-        subject.style.display = 'block';           
+        subject.id = "subject";     
+        subject.setAttribute("class", "read_subject");     
         document.querySelector('#currentEmail').appendChild(subject);
-  
-  const body = document.createElement('div');
+        
+  const body = document.createElement("div");
         body.id = "body";
-        body.style.display = 'block';           
+        body.setAttribute("class", "read_body");    
         document.querySelector('#currentEmail').appendChild(body);
  
-  // Creates the reply btn into the selected email
-  const reply = document.createElement("button");
-        reply.id = "reply"
-        reply.className = "btn btn-primary"
-        reply.innerHTML = "Reply"
-        document.querySelector('#currentEmail').appendChild(reply);
+  // Div that holds both reply and archive btns      
+  const buttons_div = document.createElement('div');
+        buttons_div.id = "buttons_div";
+        buttons_div.setAttribute("class", "buttons_div");
+        document.querySelector('#currentEmail').appendChild(buttons_div);
 
+   
   // Creates the archive btn into the selected email
   const archive = document.createElement("button");
         archive.innerHTML = "Archive";   
         archive.id = "archive";
-        archive.style.display = 'block';
-        archive.className = "btn btn-outline-secondary"
-        document.querySelector('#currentEmail').appendChild(archive);
+        archive.className = "btn btn-lg btn-outline-secondary m-3";
+        buttons_div.appendChild(archive);
   
-  
+  // Creates the reply btn into the selected email
+  const reply = document.createElement("button");
+        reply.id = "reply"
+        reply.className = "btn btn-lg btn-primary m-3"
+        reply.innerHTML = "Reply"
+        buttons_div.appendChild(reply);
 
   
-  //document.querySelector('#submit').disabled = true;  
- 
+
+  // Disabel the submit btn
+  document.querySelector('#submit').disabled = true;  
+
+  // Submit btn actives after a message have been written
+  document.querySelector('#compose-body').addEventListener('keyup', () => {
+      document.querySelector('#submit').disabled = false;  
+  });
+  
 
   // By default, load the inbox
   load_mailbox('inbox'); 
@@ -76,19 +88,19 @@ function compose_email() {
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector('#currentEmail').style.display = 'none';
 
-  // Clear out composition fields
-   
-      f_recipients = document.querySelector('#compose-recipients');
-      f_recipients.value = '';
-  
-      f_subject = document.querySelector('#compose-subject');
-      f_subject.value = '';
-  
-      f_body = document.querySelector('#compose-body');
-      f_body.value = '';
+  // Clear out composition fields   
+  f_recipients = document.querySelector('#compose-recipients');
+  f_recipients.value = '';
 
-      
+  f_subject = document.querySelector('#compose-subject');
+  f_subject.value = '';
+
+  f_body = document.querySelector('#compose-body');
+  f_body.value = '';
+ 
+  
   document.querySelector('form').onsubmit = () => {
 
     fetch ('/emails', {
@@ -102,17 +114,18 @@ function compose_email() {
     .then(response => response.json())
     .then(result => {
       // Print result
-      console.log(result);   
-      
-       
+      console.log(result); 
     })
     
     .catch(error => {
       console.log('Error:', error);
-    }); 
-        
+    });         
     
-    load_mailbox('sent');  
+    setTimeout(() => {
+      load_mailbox('sent');   
+      
+    }, 10);
+    
         
     return false;
   }
@@ -120,13 +133,10 @@ function compose_email() {
 }
 
 
-
 //Function to load a mailbox
 function load_mailbox(mailbox) {  
 
-  // Show all emails for this inbox
-
-  
+  // Show all emails for this inbox  
   fetch(`/emails/${mailbox}`)  
   .then(response => response.json())
   .then(emails => {
@@ -135,12 +145,19 @@ function load_mailbox(mailbox) {
 
     // ... do something else with emails ...
 
-   
+    if (emails.length <= 0 ) {
+      const msg = document.createElement('p');
+            msg.innerHTML = '<h1>No mails to show.</h1>'
+            msg.style.color = '#CA503D';
+            document.querySelector('#emails-view').appendChild(msg);
+    } else {
+      
     emails.forEach(showEmails);      
-
+    }
+   
     function showEmails(emails) {
       //Create a div for every sinlge email.
-      const email_div = document.createElement('div');
+      const previewEmail = document.createElement('div');
       const sender_div = document.createElement('p');
       const subject_div = document.createElement('p');
       const time_div = document.createElement('p')
@@ -149,29 +166,32 @@ function load_mailbox(mailbox) {
       // Styles and display the required fields with its values.
       sender_div.className = 'sender';
       sender_div.innerHTML = `<h3> ${emails.sender}.</h3>`;
-      email_div.appendChild(sender_div);
+      previewEmail.appendChild(sender_div);
 
       subject_div.className = 'subject';
       subject_div.innerHTML = `<h3> ${emails.subject}.</h3>`;
-      email_div.appendChild(subject_div);
+      previewEmail.appendChild(subject_div);
 
       time_div.className = 'timestamp';
       time_div.innerHTML = `<h3> ${emails.timestamp}.</h3>`;
-      email_div.appendChild(time_div);
+      previewEmail.appendChild(time_div);
     
 
       // Checks read or unread status for all emails and applies a corresponded style for each status. 
       if( emails.read ) {
-        email_div.setAttribute('class', 'read');
+        previewEmail.setAttribute('class', 'read');
       } else {
-        email_div.setAttribute('class', 'unread');  
-      }     
-      
+        previewEmail.setAttribute('class', 'unread');  
+      }      
 
-      email_div.addEventListener('click', () => singleEmail(emails.id));
-      document.querySelector('#emails-view').append(email_div);
+      // Send every preview mail to be read by a function.
+      previewEmail.addEventListener('click', () => singleEmail(emails.id));
+      
+      // Add every preview mail to the requested mailbox.
+      document.querySelector('#emails-view').append(previewEmail);
     }
 
+    // Hides the archive btn for mails inside the sent mailbox.
     if (mailbox === 'sent') {
       archive.style.display = 'none';
     } else {
@@ -183,6 +203,8 @@ function load_mailbox(mailbox) {
     console.log('Error:', error);
   }); 
 
+  // Disabel the submit btn.
+  document.querySelector('#submit').disabled = true;
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -201,9 +223,9 @@ function singleEmail(id) {
   // Show the mailbox and hide other views    
   document.querySelector('#emails-view').style.display = 'none';    
   document.querySelector('#compose-view').style.display = 'none'; 
-  document.querySelector('#currentEmail').style.display = "block";  
+  document.querySelector('#currentEmail').style.display = "grid";  
 
-
+ 
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => {
@@ -213,14 +235,14 @@ function singleEmail(id) {
     // ... do something else with email ...
 
     // Function to read the mail 
-    sender.innerHTML = `<h2>From: ${email.sender}</h2><hr>`;
-    recipients.innerHTML = `<h2>To: ${email.recipients}</h2><hr>`;
-    subject.innerHTML = `<h2> ${email.subject}</h2><hr>`;
-    body.innerHTML = `<h2>${email.body}</h2><hr>`;
+    sender.innerHTML = `<h3>From: ${email.sender}</h3><hr>`;
+    recipients.innerHTML = `<h3>To: <span>${email.recipients}</span></h3>`;
+    subject.innerHTML = `<h3>Subject: <span>${email.subject}</span></h3><hr>`;
+    body.innerHTML = `<p>${email.body}</p>`;
     timestamp.innerHTML = `${email.timestamp}`;
 
      
-   
+    // Function to reply mails
     reply.addEventListener('click', () =>  {
 
       document.querySelector('#currentEmail').style.display = 'none'; 
@@ -232,7 +254,8 @@ function singleEmail(id) {
       f_body.value = `Re: "On ${email.timestamp} ${email.sender} wrote:"  ${email.body}`;
       
     });
-       
+    
+    // Change the place holder for archive btn accordingly if a mail is archived or not
     if (email.archived) {
       archive.innerHTML = "Unarchive";
     } else {
@@ -240,8 +263,8 @@ function singleEmail(id) {
     }  
 
  
-     // Mark email has read
-     fetch (`/emails/${id}`, {
+    // Mark email has read
+    fetch (`/emails/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ read: true })
     })

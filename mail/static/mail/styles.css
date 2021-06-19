@@ -1,11 +1,14 @@
-
-
 textarea {
     min-height: 400px;
 }
 
+* { margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
 .read {
+    border-radius: 10px;  
     border: 5px solid #B2B2B2;
     background-color: #626262;
     color: #FFFFFF;
@@ -14,9 +17,77 @@ textarea {
 }
 
 .unread {
+    border-radius: 10px;  
     border: 5px solid #000000; 
     background-color: #FFFFFF;
     color: #02764C;
     padding: 1em;
     margin: 0 0 1em 0;
+}
+
+
+
+.grid {
+    display: grid;
+    height: auto;    
+    grid-template-columns: repeat(2, 50%);
+    grid-template-rows:  repeat(3, 50px) 300px;
+    gap: 20px 5px;
+    grid-template-areas: 
+    "sender sender"
+    "recipients timestamp" 
+    "subject subject"
+    "body body"
+    "buttons_div buttons_div";
+}
+
+.read_sender {
+    grid-area: sender;
+    
+}
+
+.read_sender,
+.read_recipients,
+.read_subject {
+    display: flex;
+    align-items: center;
+}
+
+.read_recipients {
+    grid-area: recipients;   
+}
+
+.read_timestamp {
+    grid-area: timestamp;      
+    font-size: x-large;
+    color: #9FA5AA;    
+    text-align: left;
+    padding: 1% 0;
+}
+
+.read_subject {
+    grid-area: subject;    
+}
+
+.read_body {
+    grid-area: body;
+    border-radius: 5px;     
+    background-color: #C2CAD0;
+    color: #4C4C4C;
+    font-size: 30px; 
+    padding: 20px 0 0 20px;            
+}
+
+
+.buttons_div {
+    display: flex;
+    height: auto;
+    grid-area: buttons_div;
+    justify-content: center;
+}
+
+
+span{
+    font-size: 1.5em;
+    color: #0069D9;
 }
